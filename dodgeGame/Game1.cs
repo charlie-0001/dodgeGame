@@ -10,8 +10,7 @@ namespace dodgeGame
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
 
-        bool spacePressed;
-        MovingSprite sprite;
+        Player player;
 
         public Game1()
         {
@@ -22,8 +21,6 @@ namespace dodgeGame
 
         protected override void Initialize()
         {
-            // TODO: Add your initialization logic here
-
             base.Initialize();
         }
 
@@ -32,9 +29,12 @@ namespace dodgeGame
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
             Texture2D texture = Content.Load<Texture2D>("player");
-            sprite = new MovingSprite(texture, Vector2.Zero, new Vector2(50, 50), new Vector2(0, 0));
+            Sprite playerSprite;
+            playerSprite = new Sprite(texture, Vector2.Zero, new Vector2(50, 50));
 
-            // TODO: use this.Content to load your game content here
+            PlayerController playerController = new PlayerController();
+            player = new Player(playerSprite, playerController, Vector2.Zero, 10, 300);
+            playerController.BindPlayer(player);
         }
 
         protected override void Update(GameTime gameTime)
@@ -42,26 +42,7 @@ namespace dodgeGame
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
-            if (!spacePressed && Keyboard.GetState().IsKeyDown(Keys.Space))
-            {
-                spacePressed = true;
-                Debug.WriteLine("Space was pressed.");
-            }
-            if (Keyboard.GetState().IsKeyUp(Keys.Space))
-            {
-                spacePressed = false;
-            }
-
-            if (Mouse.GetState().LeftButton == ButtonState.Pressed)
-            {
-                Debug.WriteLine("LMB pressed.");
-                Debug.WriteLine(Mouse.GetState().X + ',' + Mouse.GetState().Y);
-            }
-
-            sprite.Update(gameTime);
-
-            // TODO: Add your update logic here
-
+            player.Update(gameTime);
             base.Update(gameTime);
         }
 
@@ -70,10 +51,8 @@ namespace dodgeGame
             GraphicsDevice.Clear(Color.Black);
 
             _spriteBatch.Begin();
-            _spriteBatch.Draw(sprite.Texture, sprite.Rect, Color.White);
+            _spriteBatch.Draw(player.sprite.Texture, player.sprite.Rect, Color.White);
             _spriteBatch.End();
-
-            // TODO: Add your drawing code here
 
             base.Draw(gameTime);
         }
