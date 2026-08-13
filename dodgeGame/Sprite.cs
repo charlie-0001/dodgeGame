@@ -1,6 +1,5 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
-using System.Runtime.CompilerServices;
 
 namespace dodgeGame
 {
@@ -17,6 +16,6 @@ namespace dodgeGame
             }
         }
 
-        public static void Update() { }
+        public virtual void Update() { }
     }
 }
