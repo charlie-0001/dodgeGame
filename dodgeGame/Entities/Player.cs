@@ -1,18 +1,25 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 
 namespace dodgeGame.Entities
 {
-    internal class Player(Sprite sprite, PlayerController controller, Vector2 velocity, int speed, int maxSpeed) : Entity(sprite, kills: false, isActive: true)
+    internal class Player(Sprite sprite, PlayerController controller, Vector2 velocity, int speed, int maxSpeed, Texture2D onDeathTexture = null) : Entity(sprite, kills: false, isActive: true)
     {
         public Controller Controller { get; set; } = controller;
         public Vector2 Velocity { get; set; } = velocity;
         public int Speed { get; set; } = speed;
         public int MaxSpeed { get; set; } = maxSpeed;
+        public Texture2D onDeathTexture { get; set; } = onDeathTexture;
+        public enum Direction
+        {
+            UP,
+            DOWN,
+            LEFT,
+            RIGHT
+        }
+
+        Direction direction { get; set; } = Direction.DOWN;
 
         // public int Slip { get; set; } = slip;
 
@@ -32,9 +39,19 @@ namespace dodgeGame.Entities
 
         public override void OnCollision(Entity other)
         {
-            if (other is Enemy enemy)
+            switch (other)
             {
-                Destroy();
+                case (Enemy enemy):
+                    if (onDeathTexture != null && enemy.Kills)
+                    {
+                        Particle explosion = new Particle(new Sprite(onDeathTexture, Sprite.Position, Sprite.Size), 1);
+                        Game1.Entities.Add(explosion);
+                        Destroy();
+                    }
+                    break;
+                case (Wall wall):
+                    // add logic later
+                    break;
             }
         }
     }
