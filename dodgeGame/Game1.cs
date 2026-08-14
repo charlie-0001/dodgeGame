@@ -1,5 +1,6 @@
 ﻿using dodgeGame.Entities;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System.Collections.Generic;
@@ -9,10 +10,13 @@ namespace dodgeGame
 {
     public class Game1 : Game
     {
+        public static ContentManager ContentService { get; private set; }
+        internal static List<Entity> Entities { get; private set; } = new List<Entity>();
+
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
 
-        List<Entity> entities = new List<Entity>();
+        Sprite explosionTexture;
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
@@ -30,21 +34,24 @@ namespace dodgeGame
         protected override void LoadContent()
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
-
+            ContentService = Content;
+            
             Texture2D enemyTexture = Content.Load<Texture2D>("enemy1");
             Sprite enemySprite = new Sprite(enemyTexture, new Vector2(100, 100), new Vector2(100, 100));
 
             EnemyController enemyController = new EnemyController();
             Enemy enemy = new Enemy(enemySprite);
-            entities.Add(enemy);
+            Entities.Add(enemy);
 
             Texture2D playerTexture = Content.Load<Texture2D>("player");
             Sprite playerSprite = new Sprite(playerTexture, Vector2.Zero, new Vector2(50, 50));
 
+            Texture2D playerDeathTexture = Content.Load<Texture2D>("explosion");
+
             PlayerController playerController = new PlayerController();
-            Player player = new Player(playerSprite, playerController, Vector2.Zero, 20, 300);
+            Player player = new Player(playerSprite, playerController, Vector2.Zero, 20, 300, playerDeathTexture);
             playerController.BindPlayer(player);
-            entities.Add(player);
+            Entities.Add(player);
         }
 
         protected override void Update(GameTime gameTime)
@@ -52,17 +59,17 @@ namespace dodgeGame
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
-            foreach (Entity entity in entities)
+            foreach (Entity entity in Entities)
             {
                 entity.Update(gameTime);
             }
 
-            for (int i = 0; i < entities.Count; i++)
+            for (int i = 0; i < Entities.Count; i++)
             {
-                for (int j = i + 1; j < entities.Count; j++)
+                for (int j = i + 1; j < Entities.Count; j++)
                 {
-                    Entity a = entities[i];
-                    Entity b = entities[j];
+                    Entity a = Entities[i];
+                    Entity b = Entities[j];
 
                     if (a.Sprite.Rect.Intersects(b.Sprite.Rect))
                     {
@@ -72,7 +79,7 @@ namespace dodgeGame
                 }
             }
 
-            entities.RemoveAll(e => !e.IsActive);
+            Entities.RemoveAll(e => !e.IsActive);
 
 
             base.Update(gameTime);
@@ -84,7 +91,7 @@ namespace dodgeGame
 
             _spriteBatch.Begin();
 
-            foreach (Entity entity in entities)
+            foreach (Entity entity in Entities)
             {
                 _spriteBatch.Draw(entity.Sprite.Texture, entity.Sprite.Rect, Color.White);
             }
