@@ -1,6 +1,8 @@
-﻿using Microsoft.Xna.Framework;
+﻿using dodgeGame.Entities;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System.Collections.Generic;
 using System.Diagnostics;
 
 namespace dodgeGame
@@ -10,11 +12,12 @@ namespace dodgeGame
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
 
-        Player player;
-
+        List<Entity> entities = new List<Entity>();
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
+            _graphics.PreferredBackBufferWidth = 1000;
+            _graphics.PreferredBackBufferHeight = 1000;
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
         }
@@ -28,13 +31,20 @@ namespace dodgeGame
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            Texture2D texture = Content.Load<Texture2D>("player");
-            Sprite playerSprite;
-            playerSprite = new Sprite(texture, Vector2.Zero, new Vector2(50, 50));
+            Texture2D enemyTexture = Content.Load<Texture2D>("enemy1");
+            Sprite enemySprite = new Sprite(enemyTexture, new Vector2(100, 100), new Vector2(100, 100));
+
+            EnemyController enemyController = new EnemyController();
+            Enemy enemy = new Enemy(enemySprite);
+            entities.Add(enemy);
+
+            Texture2D playerTexture = Content.Load<Texture2D>("player");
+            Sprite playerSprite = new Sprite(playerTexture, Vector2.Zero, new Vector2(50, 50));
 
             PlayerController playerController = new PlayerController();
-            player = new Player(playerSprite, playerController, Vector2.Zero, 10, 300);
+            Player player = new Player(playerSprite, playerController, Vector2.Zero, 20, 300);
             playerController.BindPlayer(player);
+            entities.Add(player);
         }
 
         protected override void Update(GameTime gameTime)
@@ -42,7 +52,29 @@ namespace dodgeGame
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
-            player.Update(gameTime);
+            foreach (Entity entity in entities)
+            {
+                entity.Update(gameTime);
+            }
+
+            for (int i = 0; i < entities.Count; i++)
+            {
+                for (int j = i + 1; j < entities.Count; j++)
+                {
+                    Entity a = entities[i];
+                    Entity b = entities[j];
+
+                    if (a.Sprite.Rect.Intersects(b.Sprite.Rect))
+                    {
+                        a.OnCollision(b);
+                        b.OnCollision(a);
+                    }
+                }
+            }
+
+            entities.RemoveAll(e => !e.IsActive);
+
+
             base.Update(gameTime);
         }
 
@@ -51,7 +83,12 @@ namespace dodgeGame
             GraphicsDevice.Clear(Color.Black);
 
             _spriteBatch.Begin();
-            _spriteBatch.Draw(player.sprite.Texture, player.sprite.Rect, Color.White);
+
+            foreach (Entity entity in entities)
+            {
+                _spriteBatch.Draw(entity.Sprite.Texture, entity.Sprite.Rect, Color.White);
+            }
+
             _spriteBatch.End();
 
             base.Draw(gameTime);
