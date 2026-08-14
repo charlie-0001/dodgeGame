@@ -15,7 +15,5 @@ namespace dodgeGame
                 return new Rectangle((int)Position.X, (int)Position.Y, (int)Size.X, (int)Size.Y);
             }
         }
-
-        public virtual void Update() { }
     }
 }
