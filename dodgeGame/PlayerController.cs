@@ -1,14 +1,13 @@
-﻿using Microsoft.Xna.Framework;
+﻿using dodgeGame.Entities;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
 
 namespace dodgeGame
 {
-    internal class PlayerController : Controller
+    internal class PlayerController() : Controller([Keys.W, Keys.S, Keys.A, Keys.D], new Dictionary<Enum, Action> { })
     {
-        public PlayerController() : base([Keys.W, Keys.S, Keys.A, Keys.D], new Dictionary<Enum, Action>{}) { }
-
         public void BindPlayer(Player player)
         {
             Movements[Keys.A] = () =>
