@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System.Diagnostics;
 
 namespace dodgeGame.Entities
 {
@@ -19,12 +20,26 @@ namespace dodgeGame.Entities
             RIGHT
         }
 
-        Direction direction { get; set; } = Direction.DOWN;
+        Direction direction { get; set; } = Direction.DOWN; 
 
         // public int Slip { get; set; } = slip;
 
         public override void Update(GameTime gameTime)
         {
+            // collisions
+            bool result;
+            Raycast newRaycast = new Raycast(RaycastDirection.UP, 100, 1, Sprite.Position);
+            foreach (Entity entity in Game1.Entities)
+            {
+                if (!(entity is Wall)) { continue; }
+                result = newRaycast.RaycastResult(entity);
+                if (result == true)
+                {
+                    Debug.WriteLine("Raycast collision detected!");
+                }
+            }
+
+            // movement
             Velocity *= 0.85f;
 
             foreach (Keys key in Keyboard.GetState().GetPressedKeys())
