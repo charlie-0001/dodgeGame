@@ -12,6 +12,7 @@ namespace dodgeGame
     {
         public static ContentManager ContentService { get; private set; }
         internal static List<Entity> Entities { get; private set; } = new List<Entity>();
+        internal static Player Player { get; private set; }
 
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
@@ -50,8 +51,14 @@ namespace dodgeGame
 
             PlayerController playerController = new PlayerController();
             Player player = new Player(playerSprite, playerController, Vector2.Zero, 20, 300, playerDeathTexture);
+            Player = player;
             playerController.BindPlayer(player);
             Entities.Add(player);
+
+            Texture2D wallTexture = Content.Load<Texture2D>("wall");
+            Sprite wallSprite = new Sprite(wallTexture, new Vector2(150, 150), new Vector2(200, 200));
+            Wall wall = new Wall(wallSprite);
+            Entities.Add(wall);
         }
 
         protected override void Update(GameTime gameTime)
@@ -80,7 +87,6 @@ namespace dodgeGame
             }
 
             Entities.RemoveAll(e => !e.IsActive);
-
 
             base.Update(gameTime);
         }
