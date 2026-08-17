@@ -28,7 +28,8 @@ namespace dodgeGame.Entities
         {
             // collisions
             bool result;
-            Raycast newRaycast = new Raycast(RaycastDirection.UP, 100, 1, Sprite.Position);
+            Raycast newRaycast = new Raycast(RaycastDirection.UP, Sprite.Rect.Height/2 + 1, Sprite.Rect.Width, 
+                new Vector2(Sprite.Position.X + Sprite.Rect.Width/2, Sprite.Position.Y + Sprite.Rect.Height/2));
             foreach (Entity entity in Game1.Entities)
             {
                 if (!(entity is Wall)) { continue; }
