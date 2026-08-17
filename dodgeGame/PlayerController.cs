@@ -8,6 +8,10 @@ namespace dodgeGame
 {
     internal class PlayerController() : Controller([Keys.W, Keys.S, Keys.A, Keys.D], new Dictionary<Enum, Action> { })
     {
+        public bool CanGoUp { get; set; } = true;
+        public bool CanGoDown { get; set; } = true;
+        public bool CanGoLeft { get; set; } = true;
+        public bool CanGoRight { get; set; } = true;
         public void BindPlayer(Player player)
         {
             Movements[Keys.A] = () =>
@@ -28,6 +32,8 @@ namespace dodgeGame
 
             Movements[Keys.W] = () =>
             {
+                if ()
+
                 if (player.Velocity.Y > -player.MaxSpeed)
                 {
                     player.Velocity += new Vector2(0, -player.Speed);
